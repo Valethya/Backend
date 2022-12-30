@@ -1,45 +1,100 @@
-class Product {
+const fs = require("fs");
+
+class ProductManager {
+  // Clase para administrar productos
+
   ///CONSTRUCTOR
-  constructor(title, description, price, thumbnail, stock) {
-    (this.title = title),
-      (this.description = description),
-      (this.price = price),
-      (this.thumbnail = thumbnail),
-      (this.stock = stock);
+  constructor() {
+    this.path = "./product.json";
   }
 
   ///METHODS
-  static getProducts() {
-    console.log(products);
-  }
-  static addProduct(constructor) {
-    let lastcode =
-      products.length != 0 ? products[products.length - 1].code : 0;
-    constructor.code = ++lastcode;
-    products.push(constructor);
-  }
 
-  static getProductsById(id) {
-    let product = products.find((item) => item.code == id);
+  getProducts = async () => {
+    if (fs.existsSync(this.path)) {
+      const data = await fs.promises.readFile(this.path, "utf-8");
+
+      const productos = JSON.parse(data);
+      console.log(productos);
+      return productos;
+    } else {
+      return [];
+    }
+  };
+
+  addProduct = async (title, description, price, image, stock) => {
+    const products = await this.getProducts();
+    const product = {
+      title: title,
+      description: description,
+      price: price,
+      image: image,
+      stock: stock,
+    };
+    let lastId = products.length != 0 ? products[products.length - 1].id : 1;
+    product.id = ++lastId;
+
+    products.push(product);
+    await fs.promises.writeFile(this.path, JSON.stringify(products));
+    return product;
+  };
+
+  getProductsById = async (id) => {
+    let products = await this.getProducts();
+    let product = products.find((item) => item.id == id);
     product
       ? console.log(`el producto es ${product.description}`)
       : console.log("no tenemos ningun producto con ese id");
-  }
+  };
+
+  updateProduct = async (id, propiedad, value) => {
+    let products = await this.getProducts();
+    let product = products.find((item) => item.id === id);
+    product[propiedad] = value;
+
+    let index = products.indexOf(product);
+    products[index] = product;
+    await fs.promises.writeFile(this.path, JSON.stringify(products));
+  };
+
+  deleteProduct = async (id) => {
+    const products = await this.getProducts();
+    console.log(products, "mira estos productos");
+    let newProducts = products.filter((item) => item.id != id);
+    console.log(newProducts, "esto esta filtrado");
+    await fs.promises.writeFile(this.path, JSON.stringify(newProducts));
+  };
 }
 
-const products = [];
+const productos = new ProductManager();
 
-Product.addProduct(
-  new Product("polera", "polera de algodon blanca", 15.99, "dsdsd", 30)
-);
+const env = async () => {
+  await productos.addProduct(
+    "polera",
+    "polera de algodon blanca",
+    15.99,
+    "dsdsd",
+    30
+  );
+  await productos.addProduct(
+    "polera",
+    "polera de algodon negra",
+    15.99,
+    "dsdsd",
+    30
+  );
+  await productos.addProduct(
+    "polera",
+    "polera de algodon roja",
+    15.99,
+    "dsdsd",
+    30
+  );
+  await productos.deleteProduct(3);
+  await productos.updateProduct(1, "price", 8000);
+};
+env();
 
-Product.addProduct(
-  new Product("polera", "polera de algodon negra", 15.99, "dsdgfdf", 30)
-);
-Product.addProduct(
-  new Product("polera", "polera de algodon roja", 15.99, "dsdgjhk", 30)
-);
+productos.getProducts();
 
-Product.getProducts();
-
-Product.getProductsById(2);
+productos.getProductsById(3);

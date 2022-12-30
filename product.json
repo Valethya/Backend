@@ -1,0 +1,26 @@
+[
+    {
+        "title": "pantalon denim",
+        "description": "pantalon de denim negro",
+        "price": 8000,
+        "image": "saoidnow",
+        "stock": 40,
+        "id": 1
+    },
+    {
+        "title": "pantalon denim",
+        "description": "pantalon denim indigo",
+        "price": 65000,
+        "image": "cadsv",
+        "stock": 30,
+        "id": 2
+    },
+    {
+        "title": "pantalon denim",
+        "description": "pantalon denim gris",
+        "price": 6000,
+        "image": "asfrewge",
+        "stock": 40,
+        "id": 4
+    }
+]
